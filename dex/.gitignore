@@ -1,0 +1,5 @@
+dist-newstyle/
+print-plc
+bin
+cabal.project.local
+printed

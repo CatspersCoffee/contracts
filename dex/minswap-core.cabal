@@ -1,0 +1,179 @@
+Cabal-Version:      3.0
+Name:               minswap-core
+Version:            0.1.0.0
+Author:              Minswap Labs
+Maintainer:          contact@minswap.org
+Build-Type:          Simple
+Copyright:           © 2021 Minswap Labs
+License:             GPL-3.0-only
+License-files:       LICENSE
+
+common c
+  default-language: Haskell2010
+  default-extensions:
+    ExplicitForAll
+    ScopedTypeVariables
+    DeriveGeneric
+    StandaloneDeriving
+    DeriveLift
+    GeneralizedNewtypeDeriving
+    DeriveFunctor
+    DeriveFoldable
+    DeriveTraversable
+    LambdaCase
+    MultiParamTypeClasses
+    TypeOperators
+    FlexibleInstances
+    NamedFieldPuns
+    TypeFamilies
+    FlexibleContexts
+    DeriveAnyClass
+    DerivingStrategies
+    DerivingVia
+    DataKinds
+  ghc-options:
+    -Wall -Werror -Wmissing-export-lists -Wcompat
+    -Wnoncanonical-monad-instances -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wmissing-deriving-strategies
+    -Wredundant-constraints -Widentities
+    -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+
+library
+  import: c
+  hs-source-dirs: src
+  exposed-modules:
+    Minswap.Types.Coin,
+    Minswap.ConstantProductPool.OnChain,
+    Minswap.ConstantProductPool.Types,
+    Minswap.ConstantProductPool.Utils,
+    Minswap.ConstantProductFactory.OnChain,
+    Minswap.ConstantProductFactory.Types,
+    Minswap.ConstantProductLiquidity.OnChain,
+    Minswap.ConstantProductPoolNFT.OnChain,
+    Minswap.ConstantProductPoolNFT.Utils,
+    Minswap.BatchOrder.OnChain,
+    Minswap.BatchOrder.Types,
+    Minswap.Utils.OnChainUtils,
+    Minswap.Spooky.Typed,
+    Minswap.Spooky.Untyped,
+    Minswap.Spooky.TypedSpookyContexts,
+    Minswap.Spooky.UntypedSpookyContexts,
+    Minswap.Plutarch.Utils,
+    Minswap.Plutarch.Utils.Cont,
+    Minswap.Plutarch.Ledger
+  build-depends:
+    , aeson
+    , base ^>= 4.14.1.0
+    , bytestring
+    , cardano-api
+    , cardano-ledger-alonzo
+    , containers
+    , directory >= 1.3.6.0
+    , freer-simple
+    , hex-text
+    , lens -any
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-tx
+    , plutus-tx-plugin
+    , pretty-show
+    , pretty-simple
+    , prettyprinter
+    , regex-tdfa ^>= 1.3.1.0
+    , req ^>= 3.9.0
+    , serialise
+    , plutarch
+    , template-haskell >= 2.16.0.0
+    , text
+    , uuid
+    , plutonomy
+    , generics-sop
+
+executable minswap-cli
+  import: c
+  hs-source-dirs: src/Minswap
+  main-is:        MinswapCLI.hs
+  ghc-options:    -threaded -rtsopts "-with-rtsopts=-T"
+  build-depends:
+    , aeson
+    , base ^>= 4.14.1.0
+    , bytestring
+    , cardano-api
+    , cardano-api
+    , cardano-ledger-alonzo
+    , directory
+    , directory >= 1.3.6.0
+    , ghc-prim
+    , minswap-core
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-tx
+    , plutus-tx-plugin
+    , pretty-simple
+    , serialise
+    , template-haskell >= 2.16.0.0
+    , text
+
+test-suite minswap-tests
+  import: c
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs: test
+  other-modules:  Spec.Utils
+  build-depends:
+    , QuickCheck
+    , base ^>=4.14.1.0
+    , containers
+    , data-default
+    , directory >= 1.3.6.0
+    , freer-extras
+    , minswap-core
+    , plutus-ledger
+    , plutus-tx
+    , tasty
+    , tasty-quickcheck
+    , template-haskell >= 2.16.0.0
+    , text
+  if !(impl(ghcjs) || os(ghcjs))
+    build-depends: plutus-tx-plugin -any
+
+test-suite tweag-audit
+  type: exitcode-stdio-1.0
+  main-is: Audit.hs
+  hs-source-dirs: audit
+  other-modules:
+    Audit.Attacks
+    Audit.Attacks.DatumHijacking
+    Audit.OffChain
+    Audit.MinSwapScripts
+    Audit.ConstantProductPool.BasicOrderProcessing
+    Audit.ConstantProductPool.ProfitSharing
+    Audit.ConstantProductPool.WithdrawLiquidity
+    Audit.ConstantProductPool.Batching
+    Audit.ConstantProductPool.Utils
+    Audit.ConstantProductPool.OrderGen
+  default-language: Haskell2010
+  build-depends:
+    , QuickCheck
+    , quickcheck-transformer
+    , mtl
+    , base ^>=4.14.1.0
+    , containers
+    , data-default
+    , directory >= 1.3.6.0
+    , freer-extras
+    , minswap-core
+    , plutus-ledger
+    , plutus-tx
+    , tasty
+    , tasty-quickcheck
+    , tasty-hunit
+    , tasty-expected-failure
+    , HUnit
+    , template-haskell >= 2.16.0.0
+    , text
+    , cooked-validators
+    , plutus-tx-plugin -any
+  ghc-options:         -Wall -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
